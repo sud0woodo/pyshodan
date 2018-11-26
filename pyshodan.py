@@ -7,7 +7,7 @@ NOTE: You will need a valid Shodan API key to perform the queries.
 import shodan
 import argparse
 
-API_KEY = "[INSERT API KEY]"
+API_KEY = "[INSERT SHODAN API KEY]"
 api = shodan.Shodan(API_KEY)
 
 def ip_lookup(ip_address):
@@ -15,27 +15,32 @@ def ip_lookup(ip_address):
         ip = api.host(ip_address)
         print("IP: {}".format(ip['ip_str']))
         print("Country: {}".format(ip['country_name']))
-
-        for data in ip['data']:
-            print("Port: {}".format(data['port']))
-            print("\tProtocol: {}".format(data['transport']))
-            print("\tBanner: {}".format(data['product']))
+        try:
+            for data in ip['data']:
+                print("Port: {}".format(data['port']))
+                print("\tProtocol: {}".format(data['transport']))
+                print("\tBanner: {}".format(data['product']))
+        except KeyError:
+            print("Service banner not found!")
     except shodan.APIError as e:
         print("API Error: {}".format(e))
 
 def domain_lookup(domain_address):
     try:
         domain = api.search(domain_address)
-        for data in domain['matches']:
-            print("IP: {}".format(data['ip_str']))
-            print("Domain: {}".format(u''.join(data['domains'])))
-            print("Hostnames: {}".format(u''.join(data['hostnames'])))
-            print("ISP: {}".format(data['isp']))
-            print("Country: {}".format(data['location']['country_name']))
-            print("Port: {}".format(data['port']))
-            print("\tProtocol: {}".format(data['transport']))
-            print("\tService: {}".format(data['product']))
-            print("\tVersion: {}".format(data['version']))
+        try:
+            for data in domain['matches']:
+                print("IP: {}".format(data['ip_str']))
+                print("Domain: {}".format(u''.join(data['domains'])))
+                print("Hostnames: {}".format(u''.join(data['hostnames'])))
+                print("ISP: {}".format(data['isp']))
+                print("Country: {}".format(data['location']['country_name']))
+                print("Port: {}".format(data['port']))
+                print("\tProtocol: {}".format(data['transport']))
+                print("\tService: {}".format(data['product']))
+                print("\tVersion: {}".format(data['version']))
+        except KeyError:
+            print("Service banner not found!")
     except shodan.APIError as e:
         print("API Error: {}".format(e))
 
